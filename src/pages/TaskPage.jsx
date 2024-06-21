@@ -32,6 +32,7 @@ const TaskPage = ({ userId, logout }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [reminderDate, setReminderDate] = useState('');
+  const [priority, setPriority] = useState('low'); // State for task priority
   const [message, setMessage] = useState('');
   const [activeTab, setActiveTab] = useState('pending');
   const [editTaskId, setEditTaskId] = useState('');
@@ -71,16 +72,17 @@ const TaskPage = ({ userId, logout }) => {
       const response = await fetch('http://localhost:5000/task/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, title, description, reminderDate }),
+        body: JSON.stringify({ userId, title, description, reminderDate, priority }), // Include priority in the request body
       });
       const data = await response.json();
       if (data.success) {
-        const newTask = { _id: data.taskId, title, description, status: 'pending', reminderDate };
+        const newTask = { _id: data.taskId, title, description, status: 'pending', reminderDate, priority }; // Include priority in the new task object
         setPendingTasks([...pendingTasks, newTask]);
         setTasks([...tasks, newTask]);
         setTitle('');
         setDescription('');
         setReminderDate('');
+        setPriority('low'); // Reset priority state after task addition
         setMessage('Task added successfully');
         scheduleNotifications([...pendingTasks, newTask]);
       } else {
@@ -151,6 +153,7 @@ const TaskPage = ({ userId, logout }) => {
     setTitle(taskToEdit.title);
     setDescription(taskToEdit.description);
     setReminderDate(taskToEdit.reminderDate || '');
+    setPriority(taskToEdit.priority || 'low'); // Set priority state for editing task
   };
 
   const cancelEdit = () => {
@@ -158,31 +161,36 @@ const TaskPage = ({ userId, logout }) => {
     setTitle('');
     setDescription('');
     setReminderDate('');
+    setPriority('low'); // Reset priority state on cancel
   };
 
   const submitEditTask = async () => {
     try {
       const response = await fetch(`http://localhost:5000/task/update/${editTaskId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, reminderDate }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, title, description, reminderDate, priority }), // Include priority in update request
       });
       const data = await response.json();
       if (data.success) {
         const updatedPendingTasks = pendingTasks.map((task) =>
-          task._id === editTaskId ? { ...task, title, description, reminderDate } : task
+          task._id === editTaskId ? { ...task, title, description, reminderDate, priority } : task
         );
         setPendingTasks(updatedPendingTasks);
         setEditTaskId('');
         setTitle('');
         setDescription('');
         setReminderDate('');
+        setPriority('low'); // Reset priority state after task update
         setMessage('Task updated successfully');
         scheduleNotifications(updatedPendingTasks);
       } else {
         setMessage(data.message);
       }
     } catch (e) {
+      console.error('Failed to update task', e);
       setMessage('Failed to update task');
     }
   };
@@ -249,39 +257,57 @@ const TaskPage = ({ userId, logout }) => {
           <div>
             <form onSubmit={editTaskId ? submitEditTask : addTask} className="mb-8">
               <div className="flex flex-wrap mb-4">
-                <div className="
-                  w-full md:w-1/2 pr-2 mb-4">
-                  <label
-                    htmlFor="title"
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                  >
+                <div className="w-full md:w-1/2 pr-2 mb-4">
+                  <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">
                     Title
                   </label>
                   <input
-                    id="title"
                     type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    id="title"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     placeholder="Enter task title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
                   />
                 </div>
-                <div className="w-full md:w-1/2 pl-2 mb-4">
+                <div className="w-full md:w-1/2 pr-2 mb-4">
+                  <label
+                    htmlFor="priority"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    Priority
+                  </label>
+                  <select
+                    id="priority"
+                    value={priority}
+                    onChange={(e) => setPriority(e.target.value)}
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex flex-wrap mb-4">
+                <div className="w-full pr-2 mb-4">
                   <label
                     htmlFor="description"
                     className="block text-gray-700 text-sm font-bold mb-2"
                   >
                     Description
                   </label>
-                  <input
+                  <textarea
                     id="description"
-                    type="text"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     placeholder="Enter task description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                   />
                 </div>
+              </div>
+              <div className="flex flex-wrap mb-4">
                 <div className="w-full md:w-1/2 pr-2 mb-4">
                   <label
                     htmlFor="reminderDate"
@@ -290,123 +316,103 @@ const TaskPage = ({ userId, logout }) => {
                     Reminder Date
                   </label>
                   <input
-                    id="reminderDate"
                     type="datetime-local"
+                    id="reminderDate"
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     value={reminderDate}
                     onChange={handleReminderChange}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="Select reminder date"
                   />
                 </div>
-                <div className="w-full">
-                  <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  >
-                    {editTaskId ? 'Update Task' : 'Add Task'}
-                  </button>
-                  {editTaskId && (
+              </div>
+              <div className="flex items-center justify-end">
+                {editTaskId ? (
+                  <div className="flex items-center">
+                    <button
+                      type="submit"
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+                    >
+                      Update Task
+                    </button>
                     <button
                       type="button"
                       onClick={cancelEdit}
-                      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-2 focus:outline-none focus:shadow-outline"
+                      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
                     >
                       Cancel
                     </button>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <button
+                    type="submit"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Add Task
+                  </button>
+                )}
               </div>
             </form>
-            {message && <p className="mt-4 text-red-500">{message}</p>}
-            <ul>
+            <div>
               {pendingTasks.map((task) => (
-                <li
-                  key={task._id}
-                  className={`mb-4 p-4 bg-white shadow-md rounded-lg flex justify-between items-center ${
-                    task.status.includes('done') ? 'line-through text-gray-500' : ''
-                  }`}
-                >
-                  <div>
-                    <h2 className="text-xl font-bold">{task.title}</h2>
-                    <p className="text-gray-700">{task.description}</p>
-                    {task.status === 'deleted' && (
-                      <p className="text-red-500 mt-2">This task has been marked as deleted</p>
-                    )}
-                    {task.status === 'done and deleted' && (
-                      <p className="text-red-500 mt-2">
-                        This task has been marked as done and deleted
+                <div key={task._id} className="border-b border-gray-200 py-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-bold">{task.title}</h2>
+                      <p className="text-gray-700">{task.description}</p>
+                      <p className="text-blue-500 mt-2">Priority: {task.priority}</p>
+                      <p className="text-gray-600">
+                        {task.reminderDate ? `Reminder: ${task.reminderDate}` : 'No reminder set'}
                       </p>
-                    )}
-                    {task.reminderDate && (
-                      <p className="text-blue-500 mt-2">
-                        Reminder set for: {new Date(task.reminderDate).toLocaleString()}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center">
-                    <FontAwesomeIcon
-                      icon={faEdit}
-                      className="text-blue-500 cursor-pointer mr-2"
-                      onClick={() => handleEditTask(task._id)}
-                    />
-                    {task.status === 'pending' && (
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => handleEditTask(task._id)}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
                       <button
                         onClick={() => updateTask(task._id)}
-                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2 focus:outline-none focus:shadow-outline"
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2"
                       >
-                        Mark as Done
+                        Mark Done
                       </button>
-                    )}
-                    <button
-                      onClick={() => deleteTask(task._id)}
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    >
-                      Delete
-                    </button>
+                      <button
+                        onClick={() => deleteTask(task._id)}
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
         {activeTab === 'done' && (
           <div>
-            <ul>
-              {doneTasks.map((task) => (
-                <li
-                  key={task._id}
-                  className={`mb-4 p-4 bg-white shadow-md rounded-lg flex justify-between items-center ${
-                    task.status.includes('done') ? 'line-through text-gray-500' : ''
-                  }`}
-                >
+            {doneTasks.map((task) => (
+              <div key={task._id} className="border-b border-gray-200 py-4">
+                <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-xl font-bold">{task.title}</h2>
                     <p className="text-gray-700">{task.description}</p>
-                    {task.status === 'deleted' && (
-                      <p className="text-red-500 mt-2">This task has been marked as deleted</p>
-                    )}
-                    {task.status === 'done and deleted' && (
-                      <p className="text-red-500 mt-2">
-                        This task has been marked as done and deleted
-                      </p>
-                    )}
-                    {task.reminderDate && (
-                      <p className="text-blue-500 mt-2">
-                        Reminder set for: {new Date(task.reminderDate).toLocaleString()}
-                      </p>
-                    )}
+                    <p className="text-blue-500 mt-2">Priority: {task.priority}</p>
+                    <p className="text-gray-600">
+                      {task.reminderDate ? `Reminder: ${task.reminderDate}` : 'No reminder set'}
+                    </p>
                   </div>
                   <div>
                     <button
                       onClick={() => deleteTask(task._id)}
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                     >
                       Delete
                     </button>
                   </div>
-                </li>
-              ))}
-            </ul>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </main>

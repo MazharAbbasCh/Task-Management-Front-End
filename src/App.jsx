@@ -7,6 +7,7 @@ import SignupPage from './pages/SignupPage';
 
 const App = () => {
   const [userId, setUserId] = useState(''); // Store the user ID after login
+  const navigate = useNavigate();
 
   const logout = () => {
     setUserId('');
