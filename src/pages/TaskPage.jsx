@@ -1,16 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faCaretDown } from '@fortawesome/free-solid-svg-icons'; // Import faCaretDown for dropdown icon
+import { faClock, faCheckCircle, faPlus, faCheck, faTrashAlt, faBriefcase } from '@fortawesome/free-solid-svg-icons';
 
 const Header = ({ logout }) => (
-  <header className="bg-white text-black py-4 px-6 shadow-md">
+  <header className=" text-black py-4 px-6 shadow-md bg-gradient-to-r ">
     <div className="container mx-auto flex justify-between items-center">
-      <h1 className="text-3xl font-bold">Tasks</h1>
+      <h1 className="text-3xl font-bold flex items-center">
+        <FontAwesomeIcon icon={faBriefcase} className="mr-2 text-gray-600" />
+        Tasks Details
+      </h1>
       <button
         onClick={logout}
-        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+        className="flex items-center bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded transform transition-all duration-300 hover:scale-105"
       >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 mr-2"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M5 3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3zm7 0a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V3zm-1 4a1 1 0 1 1-2 0V2a1 1 0 0 1 2 0v5zm3.707 9.293a1 1 0 1 1-1.414 1.414L10 14.414l-2.293 2.293a1 1 0 1 1-1.414-1.414L8.586 13 6.293 10.707a1 1 0 0 1 1.414-1.414L10 11.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 13l2.293 2.293z"
+          />
+        </svg>
         Logout
       </button>
     </div>
@@ -18,7 +33,7 @@ const Header = ({ logout }) => (
 );
 
 const Footer = () => (
-  <footer className="bg-gray-200 py-4 px-6 mt-10">
+  <footer className="bg-gray-200 py-4 px-6 mt-10 bg-gradient-to-r ">
     <div className="container mx-auto text-center">
       <p className="text-gray-700">© 2023 Task Manager. All rights reserved.</p>
     </div>
@@ -227,29 +242,29 @@ const TaskPage = ({ userId, logout }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-creamy ">
       <Header logout={logout} />
 
       <main className="flex-grow container mx-auto mt-10 px-4">
-        <div className="mb-6">
+        <div className="mb-6 flex">
           <button
             onClick={() => handleTabChange('pending')}
-            className={`mr-2 py-2 px-4 rounded focus:outline-none ${
-              activeTab === 'pending'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
+            className={`mr-2 py-2 px-6 rounded focus:outline-none transform transition-all duration-300 flex items-center justify-center ${activeTab === 'pending'
+              ? 'bg-cyan-500 text-white hover:bg-cyan-700'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
           >
+            <FontAwesomeIcon icon={faClock} className="mr-2" /> {/* Icon */}
             Pending Tasks
           </button>
           <button
             onClick={() => handleTabChange('done')}
-            className={`py-2 px-4 rounded focus:outline-none ${
-              activeTab === 'done'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
+            className={`py-2 px-6 rounded focus:outline-none transform transition-all duration-300 flex items-center justify-center ${activeTab === 'done'
+              ? 'bg-cyan-500 text-white hover:bg-cyan-700'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
           >
+            <FontAwesomeIcon icon={faCheckCircle} className="mr-2" /> {/* Icon */}
             Done Tasks
           </button>
         </div>
@@ -257,40 +272,46 @@ const TaskPage = ({ userId, logout }) => {
           <div>
             <form onSubmit={editTaskId ? submitEditTask : addTask} className="mb-8">
               <div className="flex flex-wrap mb-4">
-                <div className="w-full md:w-1/2 pr-2 mb-4">
+                <div className="w-full md:w-1/2 pr-2 mb-4 animate-slide-in">
                   <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">
-                    Title
+                    Title<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     id="title"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-cyan-500"
                     placeholder="Enter task title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
                   />
                 </div>
-                <div className="w-full md:w-1/2 pr-2 mb-4">
+                <div className="w-full md:w-1/2 pr-2 mb-4 animate-slide-in">
                   <label
                     htmlFor="priority"
                     className="block text-gray-700 text-sm font-bold mb-2"
                   >
-                    Priority
+                    Priority<span className="text-red-500">*</span>
                   </label>
-                  <select
-                    id="priority"
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      id="priority"
+                      value={priority}
+                      onChange={(e) => setPriority(e.target.value)}
+                      className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-cyan-500"
+                      required
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <FontAwesomeIcon icon={faCaretDown} className="text-gray-700" />
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="flex flex-wrap mb-4">
+              <div className="flex flex-wrap mb-4 animate-slide-in">
                 <div className="w-full pr-2 mb-4">
                   <label
                     htmlFor="description"
@@ -300,27 +321,28 @@ const TaskPage = ({ userId, logout }) => {
                   </label>
                   <textarea
                     id="description"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-cyan-500"
                     placeholder="Enter task description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </div>
               </div>
-              <div className="flex flex-wrap mb-4">
+              <div className="flex flex-wrap mb-4 animate-slide-in">
                 <div className="w-full md:w-1/2 pr-2 mb-4">
                   <label
                     htmlFor="reminderDate"
                     className="block text-gray-700 text-sm font-bold mb-2"
                   >
-                    Reminder Date
+                    Reminder Date<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="datetime-local"
                     id="reminderDate"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-cyan-500"
                     value={reminderDate}
                     onChange={handleReminderChange}
+                    required
                   />
                 </div>
               </div>
@@ -329,14 +351,14 @@ const TaskPage = ({ userId, logout }) => {
                   <div className="flex items-center">
                     <button
                       type="submit"
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+                      className="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded transform transition-all duration-300 hover:scale-105"
                     >
                       Update Task
                     </button>
                     <button
                       type="button"
                       onClick={cancelEdit}
-                      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded transform transition-all duration-300 hover:scale-105"
                     >
                       Cancel
                     </button>
@@ -344,45 +366,47 @@ const TaskPage = ({ userId, logout }) => {
                 ) : (
                   <button
                     type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    className="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded flex items-center justify-center transform transition-all duration-300 hover:scale-105"
                   >
+                    <FontAwesomeIcon icon={faPlus} className="mr-2" /> {/* Icon */}
                     Add Task
                   </button>
                 )}
               </div>
             </form>
             <div>
+              <hr />
               {pendingTasks.map((task) => (
                 <div key={task._id} className="border-b border-gray-200 py-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between animate-fade-in">
                     <div>
-                      <h2 className="text-xl font-bold">{task.title}</h2>
-                      <p className="text-gray-700">{task.description}</p>
-                      <p className="text-blue-500 mt-2">Priority: {task.priority}</p>
+                      <h2 className="text-xl font-bold">Title : {task.title}</h2>
+                      <p className="text-gray-700">Description : {task.description}</p>
+                      <p className="text-cyan-500 mt-2">Priority: {task.priority}</p>
                       <p className="text-gray-600">
                         {task.reminderDate ? `Reminder: ${task.reminderDate}` : 'No reminder set'}
                       </p>
                     </div>
-                    <div>
-                      <button
-                        onClick={() => handleEditTask(task._id)}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-                      >
-                        <FontAwesomeIcon icon={faEdit} />
-                      </button>
+                    <div className="flex items-center">
                       <button
                         onClick={() => updateTask(task._id)}
-                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2"
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center transform transition-all duration-300 hover:scale-105"
+                        style={{ minWidth: '120px' }} // Adjust width as needed
                       >
-                        Mark Done
+                        <FontAwesomeIcon icon={faCheck} className="mr-2" />
+                        <span className="hidden md:inline-block">Mark Done</span> {/* Hide on small screens */}
                       </button>
                       <button
                         onClick={() => deleteTask(task._id)}
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2 flex items-center justify-center transform transition-all duration-300 hover:scale-105"
+                        style={{ minWidth: '120px' }} // Adjust width as needed
                       >
-                        Delete
+                        <FontAwesomeIcon icon={faTrashAlt} className="mr-2" />
+                        <span className="hidden md:inline-block">Delete</span> {/* Hide on small screens */}
                       </button>
                     </div>
+
+
                   </div>
                 </div>
               ))}
@@ -393,11 +417,11 @@ const TaskPage = ({ userId, logout }) => {
           <div>
             {doneTasks.map((task) => (
               <div key={task._id} className="border-b border-gray-200 py-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between animate-fade-in">
                   <div>
-                    <h2 className="text-xl font-bold">{task.title}</h2>
-                    <p className="text-gray-700">{task.description}</p>
-                    <p className="text-blue-500 mt-2">Priority: {task.priority}</p>
+                    <h2 className="text-xl font-bold">Title       : {task.title}</h2>
+                    <p className="text-gray-700">Description : {task.description}</p>
+                    <p className="text-cyan-500 mt-2">Priority : {task.priority}</p>
                     <p className="text-gray-600">
                       {task.reminderDate ? `Reminder: ${task.reminderDate}` : 'No reminder set'}
                     </p>
@@ -405,8 +429,9 @@ const TaskPage = ({ userId, logout }) => {
                   <div>
                     <button
                       onClick={() => deleteTask(task._id)}
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center transform transition-all duration-300 hover:scale-105"
                     >
+                      <FontAwesomeIcon icon={faTrashAlt} className="mr-2" />
                       Delete
                     </button>
                   </div>

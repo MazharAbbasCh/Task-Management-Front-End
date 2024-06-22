@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
 const SignupPage = () => {
     const [email, setEmail] = useState('');
@@ -26,9 +28,9 @@ const SignupPage = () => {
     };
 
     return (
-        <div className="flex justify-center items-center h-screen bg-gray-100">
+        <div className="flex justify-center items-center h-screen bg-gray-100 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-md">
             <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-                <h2 className="text-2xl font-bold mb-4">Signup</h2>
+                <h2 className="text-2xl font-bold mb-4 text-center">Sign up</h2>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
                 <input
                     type="text"
@@ -53,9 +55,10 @@ const SignupPage = () => {
                 />
                 <button
                     onClick={handleSignup}
-                    className="bg-blue-500 text-white p-2 w-full rounded hover:bg-blue-600"
+                    className="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded flex items-center justify-center transform transition-all duration-300 hover:scale-105 w-full"
                 >
-                    Signup
+                    <FontAwesomeIcon icon={faUserPlus} className="mr-2" />
+                    Sign up
                 </button>
             </div>
         </div>

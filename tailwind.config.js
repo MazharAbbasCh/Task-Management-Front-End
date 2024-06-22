@@ -5,7 +5,16 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'sans': ['Nunito', 'sans-serif'],
+        'serif': ['Merriweather', 'serif'],
+        'playfair': ['Playfair Display', 'serif'],
+        'crimson': ['Crimson Text', 'serif'],
+        'roboto-slab': ['Roboto Slab', 'serif'],
+      },
+
+    },
   },
   plugins: [],
 }
