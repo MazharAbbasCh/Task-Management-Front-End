@@ -5,7 +5,7 @@ import { faEdit, faCaretDown } from '@fortawesome/free-solid-svg-icons'; // Impo
 import { faClock, faCheckCircle, faPlus, faCheck, faTrashAlt, faBriefcase } from '@fortawesome/free-solid-svg-icons';
 
 const Header = ({ logout }) => (
-  <header className=" text-black py-4 px-6 shadow-md bg-gradient-to-r ">
+  <header className=" text-black py-4 px-6 shadow-md bg-gradient-to-r  from-teal-100">
     <div className="container mx-auto flex justify-between items-center">
       <h1 className="text-3xl font-bold flex items-center">
         <FontAwesomeIcon icon={faBriefcase} className="mr-2 text-gray-600" />
@@ -33,7 +33,7 @@ const Header = ({ logout }) => (
 );
 
 const Footer = () => (
-  <footer className="bg-gray-200 py-4 px-6 mt-10 bg-gradient-to-r ">
+  <footer className="bg-gray-200 py-4 px-6 mt-10 bg-gradient-to-r from-teal-100 ">
     <div className="container mx-auto text-center">
       <p className="text-gray-700">© 2023 Task Manager. All rights reserved.</p>
     </div>
@@ -242,10 +242,10 @@ const TaskPage = ({ userId, logout }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-creamy ">
+    <div className="min-h-screen flex flex-col bg-creamy bg-gradient-to-r from-teal-100  ">
       <Header logout={logout} />
 
-      <main className="flex-grow container mx-auto mt-10 px-4">
+      <main className="flex-grow container mx-auto mt-10 px-4 bg-gradient-to-r from-teal-100">
         <div className="mb-6 flex">
           <button
             onClick={() => handleTabChange('pending')}
